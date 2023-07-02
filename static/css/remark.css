@@ -1,0 +1,113 @@
+/*
+@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
+@import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+*/
+
+@import url(droid-serif.css);
+@import url(yanone-kaffeesatz.css);
+@import url(ubuntu-mono.css);
+
+body {
+  font-family: 'Droid Serif';
+}
+h1, h2, h3 {
+  font-family: 'Yanone Kaffeesatz';
+  font-weight: 400;
+  margin-bottom: 0;
+}
+.remark-slide-content h1 { font-size: 3em; }
+.remark-slide-content h2 { font-size: 2em; }
+.remark-slide-content h3 { font-size: 1.6em; }
+.footnote {
+  position: absolute;
+  bottom: 0.3em;
+  left: 1em;
+}
+.footnote-right {
+  position: absolute;
+  bottom: 0.3em;
+  right: 1em;
+}
+li p { line-height: 1.25em; }
+.red { color: #fa0000; }
+.large { font-size: 2em; }
+a, a > code {
+  color: rgb(249, 38, 114);
+  text-decoration: none;
+}
+code {
+  background: #e7e8e2;
+  border-radius: 5px;
+}
+.remark-code {
+  font-size: 1.2em;
+}
+.remark-code, .remark-inline-code {
+  font-family: 'Ubuntu Mono';
+  padding-left: 0.3em;
+  padding-right: 0.3em;
+}
+.remark-code-line-highlighted     { background-color: #373832; }
+.inverse {
+  background: #272822;
+  color: #777872;
+  text-shadow: 0 0 20px #333;
+}
+.inverse h1, .inverse h2, .inverse h3 {
+  color: #f3f3f3;
+  line-height: 0.8em;
+}
+
+/* presenters notes */
+.remark-notes {
+  font-size: 2.5em;
+}
+.remark-notes-preview {
+  font-size: 1.8em;
+}
+
+/* Two-column layout */
+.left-column {
+  color: #777;
+  width: 20%;
+  height: 92%;
+  float: left;
+}
+.left-column h2:last-of-type, .left-column h3:last-child {
+  color: #000;
+}
+.right-column {
+  width: 75%;
+  float: right;
+}
+
+/* floating label */
+.label {
+  position: absolute;
+  top:  150px;
+  right: 140px;
+  background: #fff;
+  z-index: 1;
+  border-radius: 5px;
+  padding-left: 1em;
+  padding-right: 1em;
+
+}
+.label h2 {
+  margin-top: 0.2em;
+}
+
+
+
+/* Image slides */
+.image-slide {
+  background-size: auto 90%;
+  background-position: center; 
+  background-repeat: no-repeat;
+}
+.image-slide-right {
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+  background-position: right center; 
+}
