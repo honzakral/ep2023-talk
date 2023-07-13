@@ -12,6 +12,12 @@
 class: center, middle, inverse
 layout: true
 ---
+# Examples
+* GH actions for pre-commit &amp; tests
+* Dockerfile
+* Terraform (project, cloudrun, gcs, secrets,)
+* deploy.sh (use tf apply)
+---
 
 # From idea to web
 Friendly indtroduction into DevOps.
@@ -22,6 +28,7 @@ Friendly indtroduction into DevOps.
 ???
 * what can be a website?
 * we assume you want to have something public on the internet
+* you can pay a few $$/month
 ---
 # Chapter 0 - YAGNI
 Github pages FTW!
@@ -29,24 +36,11 @@ Github pages FTW!
 * Maybe static generator is enough?
 * For a website that is updated every hour it is still good enough
 ---
-# Chapter 1 - Data
-Do you actually need a DB?
+# Chapter 1 - Code
+Just use Django
 ???
-* it is assumed as default in most tutorials
-* maybe just a `json` file is enough? Or a python dict?
----
-# RDBMS
-There is no silver bullet
-???
-* Again considered default
-* good for generic data but often overkill
-* SQLite can carry you a long way
-* maybe a cloud hosted DB instead like xata, firebase?
----
-# Queries, not data
-Think about what you want to do, not what the data *is*.
----
-# Chapter 2 - Code
+* easy to start with
+* lots of resources
 ---
 layout: false
 .left-column[
@@ -56,16 +50,22 @@ layout: false
 .right-column[
 ### Dependencies
 
-* `Poetry` for python
-* Docker for services
+* `Poetry` for Python
 ]
+--
+.right-column[
+### Configuration
+
+* `.env` file (`.gitignore`d!)
+]
+
 --
 .right-column[
 ### Tools
 
 * `pre-commit` to keep you honest
 * Tests to speed up development
-* `pytest` for tests
+* `pytest` for tests (with `pytest-django`)
 ]
 --
 .right-column[
@@ -78,6 +78,34 @@ layout: false
 layout: true
 class: center, middle, inverse
 ---
+# All this before first line of Application code
+---
+# Chapter 2 - Data
+Do you actually need a DB?
+???
+* it is assumed as default in most tutorials
+* maybe just a `yaml` file is enough? Or a python dict?
+---
+# RDBMS ?
+There is no silver bullet
+???
+* Again considered default
+* good for generic data but often overkill
+* SQLite can carry you a long way
+* maybe a cloud hosted DB instead like xata, firebase?
+---
+# Queries, not data
+Think about what you want to do, not what the data *is*.
+???
+* both for picking a DB and creating a schema
+---
+# Run dependencies in Docker
+Dependencies only!
+???
+* `docker-compose` to configure ports etc
+* do not run python in docker
+* run python manually!
+---
 # Chapter 3 - Going live!
 Time to deploy
 
@@ -87,6 +115,15 @@ layout: false
 # Infrastructure
 ...as code!
 ]
+.right-column[
+### Code for deployment
+
+* `Dockerfile`
+* `settings.py`
+* Registry
+* CloudRun/ECS
+]
+--
 --
 .right-column[
 ### Use Services
@@ -102,22 +139,38 @@ layout: false
 * OK to run manually
 * Iterate like with code
 ]
+???
+* assume clean slate
+* DNS, google project, cloud run, ...
 --
 .right-column[
-### Code for deployment
+### Secrets
 
-* Ansible
-* (re)use docker
+* Cloud Secret Manager
 ]
 ---
 layout: true
 class: center, middle, inverse
+---
+# `deploy.sh`
+**One** command to rule them all
+???
+* Build image
+* upload to registry
+* deploy to ecs/cloudrun
+---
+# Staging Environment
+Resources in Terraform, flag for `deploy.sh`
 ---
 # YAGNI 2.0 - k8s edition
 Back away slowly and maintain eye contact
 ---
 # Continuous Delivery
 Automate what can be automated
+???
+* when adding another person
+* recreate deploy.sh in GH actions
+* use GH secrets for credentials
 ---
 # Chapter 4 - Day 2
 ---
@@ -142,8 +195,8 @@ Keep it up!
 .right-column[
 ### Debugging
 
-* Error reporting (Sentry?)
-* APM (Sentry?)
+* Error reporting (Sentry)
+* APM (Sentry)
 ]
 ---
 layout: true
