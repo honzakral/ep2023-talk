@@ -17,6 +17,10 @@ layout: true
 Friendly introduction into DevOps.
 
 .footnote[[@flaper87](https://twitter.com/flaper87) / [@honzakral](https://twitter.com/honzakral)]
+???
+* We will talk about tools and show examples
+* these re my opinions and what works for me
+* remember *why* I say you should do things a certain way as opposed to *what* you should do
 ---
 # You need a website
 ???
@@ -80,10 +84,51 @@ automate everything, don't spend time on decisions
 ???
 frees your mind from thingking whether everything is in order
 ---
+class: inverse
+# GitHub Action - pre-commit
+```yaml
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+    - uses: pre-commit/action@v3.0.0
+```
+---
+class: inverse
+# GitHub Action - pytest
+```yaml
+  pytest:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_PASSWORD: s3cr3t
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+    - run: python -m pip install poetry
+    - run: poetry install --with dev
+    - run: poetry run pytest
+```
+
+---
 layout: true
 class: center, middle, inverse
 ---
 # All this before first line of Application code
+???
+* You never want to think about this again
+* you want to be sure these things work and keep working
 ---
 # Chapter 2 - Data
 Do you actually need a DB?
@@ -111,49 +156,8 @@ Dependencies only!
 * do not run python in docker
 * run python manually!
 ---
-# Chapter 3 - Going live!
-Time to deploy
-
----
 layout: false
-.left-column[
-# Infrastructure
-...as code!
-]
-.right-column[
-### Use Code to provision
-
-* Terraform FTW
-* OK to run manually
-* Iterate like with code
-]
-???
-* assume clean slate
-* DNS, google project, cloud run, ...
---
-.right-column[
-### Use Services
-
-* RDS/Cloud SQL for RDBMS
-* S3/GCS for static files
-]
---
-.right-column[
-### Code for deployment
-
-* `Dockerfile`
-* CloudRun/ECS
-]
---
-.right-column[
-### Secrets
-
-* Cloud Secret Manager
-]
----
-layout: true
 class: inverse
----
 # Docker Compose - Dependencies
 ```yaml
 version: '3.8'
@@ -173,6 +177,65 @@ services:
 ```
 ???
 * Everything you need, no need to install or manage state
+---
+layout: false
+class: center, middle, inverse
+# Chapter 3 - Going live!
+Time to deploy
+???
+* Now things work locally and we have put measure in plce for them to *keep* working
+* time to share our app
+
+---
+layout: false
+.left-column[
+# Infrastructure
+...as code!
+]
+.right-column[
+### Use Code to provision
+
+* Terraform FTW
+* OK to run manually
+* Iterate like with code
+]
+???
+never click in UI as that is wasted efforr
+you need to be able to iterate
+assume clean slate
+DNS, google project, cloud run, ...
+--
+.right-column[
+### Use Services
+
+* RDS/Cloud SQL for RDBMS
+* S3/GCS for static files
+]
+???
+you want to run your app, not a database, not infrastructure
+
+outsource that stuff
+--
+.right-column[
+### Code for deployment
+
+* `Dockerfile`
+* CloudRun/ECS
+]
+???
+Add dockerfile to control your environmnet
+then use a service that can run a docker container
+--
+.right-column[
+### Secrets
+
+* Cloud Secret Manager
+]
+???
+Make sure no secret is ever in any file, let alone in git!
+---
+layout: true
+class: inverse
 ---
 # Terraform - Basic Infrastructure
 ```hcl
