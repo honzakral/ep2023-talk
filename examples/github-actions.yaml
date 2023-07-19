@@ -19,12 +19,7 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          POSTGRES_PASSWORD: s3cr3t
     steps:
     - name: Checkout Code Repository
       uses: actions/checkout@v3
