@@ -24,6 +24,7 @@ Friendly introduction into DevOps.
 * we assume you want to have something public on the internet
 * you can pay a few $$/month
 * this is a start of a long term project
+* usually you start with a template, here we learn how to build it so you understand the components
 ---
 # Chapter 0 - YAGNI
 Github pages FTW!
@@ -41,19 +42,22 @@ layout: false
 .left-column[
 # Local Development
 ]
---
 .right-column[
 ### Dependencies
 
 * `Poetry` for Python
 ]
+???
+Many options, this one works and does the right thing - dependency pinning, pruning, ...
 --
 .right-column[
 ### Configuration
 
-* Defaults to local dev
 * Env variables in production
+* `os.environ.get("DATABASE_HOST", "localhost")`
 ]
+???
+Default to localhost to ease development (not for DEBUG)
 
 --
 .right-column[
@@ -63,6 +67,9 @@ layout: false
 * Tests to speed up development
 * `pytest` for tests (with `pytest-django`)
 ]
+???
+automate everything, don't spend time on decisions
+`black`, `isort`, `flake8`, ...
 --
 .right-column[
 ### CI
@@ -70,6 +77,8 @@ layout: false
 * replicate everything on Github
 * Actions running `pre-commit` and your tests
 ]
+???
+frees your mind from thingking whether everything is in order
 ---
 layout: true
 class: center, middle, inverse
@@ -112,20 +121,6 @@ layout: false
 ...as code!
 ]
 .right-column[
-### Code for deployment
-
-* `Dockerfile`
-* CloudRun/ECS
-]
---
-.right-column[
-### Use Services
-
-* RDS/Cloud SQL for RDBMS
-* S3/GCS for static files
-]
---
-.right-column[
 ### Use Code to provision
 
 * Terraform FTW
@@ -137,10 +132,91 @@ layout: false
 * DNS, google project, cloud run, ...
 --
 .right-column[
+### Use Services
+
+* RDS/Cloud SQL for RDBMS
+* S3/GCS for static files
+]
+--
+.right-column[
+### Code for deployment
+
+* `Dockerfile`
+* CloudRun/ECS
+]
+--
+.right-column[
 ### Secrets
 
 * Cloud Secret Manager
 ]
+---
+layout: true
+class: inverse
+---
+# Docker Compose - Dependencies
+```yaml
+version: '3.8'
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=my_app
+      - POSTGRES_PASSWORD=s3cr3t
+    ports:
+      - '5432:5432'
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+```
+???
+* Everything you need, no need to install or manage state
+---
+# Terraform - Basic Infrastructure
+```hcl
+resource "google_project" "my_app" {
+  name       = "My App"
+  project_id = "my-app"
+}
+
+resource "google_sql_database_instance" "prod_db" {
+  project          = google_project.my_app.id
+  name             = "prod-db"
+  database_version = "POSTGRES_15"
+  settings {
+    tier = "db-f1-micro"
+  }
+}
+```
+???
+* TF apply will create everything in the right order
+* to change, change code and run tf apply
+* to delete, remove from code and run tf apply
+---
+# Terraform - DB User
+```hcl
+resource "random_password" "db_password" { length = 32 }
+
+resource "google_secret_manager_secret" "db_password" {
+  project   = google_project.my_app.id
+  secret_id = "db-pasword"
+}
+
+resource "google_secret_manager_secret_version" "db_password" {
+  secret      = google_secret_manager_secret.db_password.id
+  secret_data = random_pasword.db_password.result
+}
+
+resource "google_sql_user" "db_user" {
+  name     = "my_app"
+  instance = google_sql_database_instance.prod_db.name
+  password = random_pasword.db_password.result
+}
+```
+???
+* we create a user with a random password that we will never see!
 ---
 layout: true
 class: center, middle, inverse
@@ -165,18 +241,16 @@ Automate what can be automated
 * recreate deploy.sh in GH actions
 * use GH secrets for credentials
 ---
-# Chapter 4 - Day 2
----
 layout: false
 .left-column[
-# Observability
+# Chapter 4 - Day 2
 Keep it up!
 ]
---
 .right-column[
 ### Backups!
 
 * untested backup doesn't count!
+* rely on your cloud provider
 ]
 --
 .right-column[
@@ -188,12 +262,21 @@ Keep it up!
 .right-column[
 ### Debugging
 
-* Error reporting (Sentry)
-* APM (Sentry)
+* Error reporting
+* APM
 ]
+
 ---
 layout: true
 class: center, middle, inverse
+---
+# You are Live!
+And equipped to stay there!
+???
+* This was a setup from 0 to a great setup but not a finished one
+* we skipped things and oversimplified others
+* but we can not get there iteratively!
+
 ---
 # Thanks!
 [@flaper87](https://twitter.com/flaper87) / [@honzakral](https://twitter.com/honzakral)
