@@ -270,27 +270,54 @@ resource "google_sql_database" "database" {
 * to delete, remove from code and run tf apply
 ---
 # Terraform - DB User
-```hcl
+```terraform
 resource "random_password" "db_password" { length = 32 }
 
 resource "google_secret_manager_secret" "db_password" {
   project   = google_project.my_app.id
-  secret_id = "db-pasword"
+  secret_id = "db-password"
 }
 
 resource "google_secret_manager_secret_version" "db_password" {
   secret      = google_secret_manager_secret.db_password.id
-  secret_data = random_pasword.db_password.result
+  secret_data = random_password.db_password.result
 }
 
 resource "google_sql_user" "db_user" {
   name     = "my_app"
   instance = google_sql_database_instance.prod_db.name
-  password = random_pasword.db_password.result
+  password = random_password.db_password.result
 }
 ```
 ???
 * we create a user with a random password that we will never see!
+---
+# Terraform - Cloud Run
+```terraform
+resource "google_cloud_run_service" "myapp" {
+  name     = "myapp-cloudrun"
+  location = "eu-west2"
+
+  template {
+    spec {
+      containers {
+        image = "gcr.io/my-app/myimage"
+        env {
+          name = "DATABASE_PASSWORD"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.db_passwword.name
+              key  = "latest"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+???
+incomplete example
 ---
 layout: true
 class: center, middle, inverse
@@ -301,6 +328,32 @@ class: center, middle, inverse
 * Build image
 * upload to registry
 * deploy to ecs/cloudrun
+---
+layout: false
+class: inverse
+# deploy.sh
+```bash
+#!/bin/bash
+set -ex
+
+docker build . -t gcr.io/my-app/myimage
+docker push gcr.io/my-app/myimage
+
+terraform apply
+
+gcloud run services update myapp-cloudrun \
+  --platform managed \
+  --region eu-west2 \
+  --image gcr.io/my-app/myimage
+```
+???
+* build and push docker
+* terraform to create EVERYTHING
+* gcloud to update service
+* tf can be skipped for a "fast deploy"
+---
+layout: true
+class: center, middle, inverse
 ---
 # Staging Environment
 Resources in Terraform, flag for `deploy.sh`
@@ -366,6 +419,34 @@ And equipped to stay there!
 [@flaper87](https://twitter.com/flaper87) / [@honzakral](https://twitter.com/honzakral)
 
 .footnote[Slideshow created using [remark](http://github.com/gnab/remark).]
+---
+layout: true
+class: inverse
+---
+# Dockerfile
+```Dockerfile
+FROM python:3.11-alpine
+
+WORKDIR /app
+RUN pip install --no-cache-dir poetry gunicorn
+
+COPY . .
+RUN poetry install
+
+CMD entrypoint.sh
+```
+---
+# entrypoint.sh
+```bash
+#!/bin/bash
+
+set -ex
+
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput
+
+exec gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 0 mysite.wsgi:application
+```
 
 
     </textarea>

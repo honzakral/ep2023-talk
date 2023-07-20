@@ -37,7 +37,6 @@ a, a > code {
   text-decoration: none;
 }
 code {
-  background: #e7e8e2;
   border-radius: 5px;
 }
 .remark-code {
@@ -103,11 +102,11 @@ code {
 /* Image slides */
 .image-slide {
   background-size: auto 90%;
-  background-position: center; 
+  background-position: center;
   background-repeat: no-repeat;
 }
 .image-slide-right {
   background-size: auto 100%;
   background-repeat: no-repeat;
-  background-position: right center; 
+  background-position: right center;
 }
