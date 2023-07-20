@@ -172,6 +172,7 @@ services:
     restart: always
     environment:
       - POSTGRES_USER=my_app
+      - POSTGRES_DATABASE=my_app
       - POSTGRES_PASSWORD=s3cr3t
     ports:
       - '5432:5432'
@@ -256,6 +257,11 @@ resource "google_sql_database_instance" "prod_db" {
   settings {
     tier = "db-f1-micro"
   }
+}
+
+resource "google_sql_database" "database" {
+  name     = "my_app"
+  instance = google_sql_database_instance.prod-db.name
 }
 ```
 ???
