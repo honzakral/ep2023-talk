@@ -207,7 +207,9 @@ layout: false
 ]
 ???
 never click in UI as that is wasted efforr
-you need to be able to iterate
+
+just as easy to figure out as the UI but repeatable and iterable!!
+
 assume clean slate
 DNS, google project, cloud run, ...
 --
@@ -303,6 +305,10 @@ resource "google_cloud_run_service" "myapp" {
       containers {
         image = "gcr.io/my-app/myimage"
         env {
+          name  = "DATABASE_HOST"
+          value = google_sql_database_instance.prod_db.private_ip_address
+        }
+        env {
           name = "DATABASE_PASSWORD"
           value_from {
             secret_key_ref {
@@ -317,7 +323,9 @@ resource "google_cloud_run_service" "myapp" {
 }
 ```
 ???
-incomplete example
+We just refer to the secret we created and it will be set as env variable
+
+no need for copy paste
 ---
 layout: true
 class: center, middle, inverse
@@ -413,6 +421,7 @@ And equipped to stay there!
 * This was a setup from 0 to a great setup but not a finished one
 * we skipped things and oversimplified others
 * but we can now get there iteratively!
+* we can also replicate the entrie thing easily for next project and/or environment
 
 ---
 # Thanks!
