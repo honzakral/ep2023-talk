@@ -18,7 +18,8 @@ Friendly introduction into DevOps.
 
 .footnote[[@flaper87](https://twitter.com/flaper87) / [@honzakral](https://twitter.com/honzakral)]
 ???
-* We will talk about tools and show examples
+* Flavio sends his regards, but he couldn't make it :(
+* We will talk about how to create your app, focusing on tools for deployment
 * these re my opinions and what works for me
 * remember *why* I say you should do things a certain way as opposed to *what* you should do
 ---
@@ -117,6 +118,8 @@ class: inverse
       postgres:
         image: postgres:15-alpine
         env:
+          POSTGRES_USER=my_app
+          POSTGRES_DATABASE=my_app
           POSTGRES_PASSWORD: s3cr3t
     steps:
     - uses: actions/checkout@v3
@@ -139,6 +142,7 @@ class: center, middle, inverse
 Do you actually need a DB?
 ???
 * it is assumed as default in most tutorials
+  * I even assumed in the GH action example
 * maybe just a `yaml` file is enough? Or a python dict?
 ---
 # RDBMS ?
@@ -147,12 +151,13 @@ There is no silver bullet
 * Again considered default
 * good for generic data but often overkill
 * SQLite can carry you a long way
-* maybe a cloud hosted DB instead like xata, firebase?
+* maybe a cloud hosted service instead?
+* consider redis, elasticsearch, or mongo
 ---
 # Queries, not data
-Think about what you want to do, not what the data *is*.
+Think about what you want to **do**, not what the data **is**.
 ???
-* both for picking a DB and creating a schema
+* both for picking a DB and creating a schema once you commit
 ---
 # Run dependencies in Docker
 Dependencies only!
@@ -183,14 +188,17 @@ services:
 ```
 ???
 * Everything you need, no need to install or manage state
+* Allows you to run tests on same system as production
+* Makes sure you don't rely on stale state :)
 ---
 layout: false
 class: center, middle, inverse
 # Chapter 3 - Going live!
 Time to deploy
 ???
-* Now things work locally and we have put measure in plce for them to *keep* working
-* time to share our app
+* now code...
+* Now things work locally and we have put measure in place for them to *keep* working
+* time to share our app with the world
 
 ---
 layout: false
@@ -273,7 +281,9 @@ resource "google_sql_database" "database" {
 ---
 # Terraform - DB User
 ```terraform
-resource "random_password" "db_password" { length = 32 }
+resource "random_password" "db_password" {
+  length = 32
+}
 
 resource "google_secret_manager_secret" "db_password" {
   project   = google_project.my_app.id
@@ -365,6 +375,10 @@ class: center, middle, inverse
 ---
 # Staging Environment
 Resources in Terraform, flag for `deploy.sh`
+???
+Duplicate the terrafor, or better yet, parametrize!
+
+Parametrize the deploy.sh as well
 ---
 # YAGNI 2.0 - k8s edition
 Back away slowly and maintain eye contact
@@ -372,6 +386,8 @@ Back away slowly and maintain eye contact
 Just so we are clear, lot of people will tell you about kubernetes...
 
 ... don't listen to them
+
+Kubernetes is used to build stuff we are using in this talk and in most projects. It is way too low level
 ---
 # Continuous Delivery
 Automate what can be automated
@@ -407,6 +423,7 @@ you need to know it is still up
 
 * Error reporting
 * APM
+* Logging
 ]
 ???
 Or you need to know why it is not
@@ -423,11 +440,13 @@ And equipped to stay there!
 * but we can now get there iteratively!
 * we can also replicate the entrie thing easily for next project and/or environment
 
+* first time I did this, as an experienced engineer but devops newbie, it took me a week, and it made me smile every time I ran deploy.sh for years after
+
 ---
 # Thanks!
-[@flaper87](https://twitter.com/flaper87) / [@honzakral](https://twitter.com/honzakral)
+## [@flaper87](https://twitter.com/flaper87) / [@honzakral](https://twitter.com/honzakral)
 
-.footnote[Slideshow created using [remark](http://github.com/gnab/remark).]
+.footnote[.small[Slideshow created using [remark](http://github.com/gnab/remark).]]
 ---
 layout: true
 class: inverse
